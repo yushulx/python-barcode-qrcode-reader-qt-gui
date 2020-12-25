@@ -1,0 +1,220 @@
+#!/usr/bin/env python3
+
+'''
+Usage:
+   app.py <license.txt>
+'''
+
+import sys
+from PySide2.QtGui import QPixmap, QImage
+
+from PySide2.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QTextEdit, QMessageBox, QHBoxLayout
+from PySide2.QtCore import QTimer
+
+from barcode_manager import *
+import os
+import cv2
+
+
+class UI_Window(QWidget):
+
+    def __init__(self, license, frameQueue, resultQueue, barcodeScanning):
+        QWidget.__init__(self)
+
+        self.frameQueue = frameQueue
+        self.resultQueue = resultQueue
+        self.barcodeScanning = barcodeScanning
+
+        self.FRAME_WIDTH = 640
+        self.FRAME_HEIGHT = 480
+        self.WINDOW_WIDTH = 1280
+        self.WINDOW_HEIGHT = 1000
+        self._results = None
+        # Initialize Dynamsoft Barcode Reader
+        self._manager = BarcodeManager(license)
+
+        # Initialize OpenCV camera
+        self._cap = cv2.VideoCapture(0)
+        # cap.set(5, 30)  #set FPS
+        self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.FRAME_WIDTH)
+        self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.FRAME_HEIGHT)
+
+        # The current path.
+        self._path = os.path.dirname(os.path.realpath(__file__))
+
+        # Create a timer.
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.nextFrameUpdate)
+
+        # Create a layout.
+        layout = QVBoxLayout()
+
+        # Add a button
+        self.btn = QPushButton("Load an image")
+        self.btn.clicked.connect(self.pickFile)
+        layout.addWidget(self.btn)
+
+        # Add a button
+        button_layout = QHBoxLayout()
+
+        btnCamera = QPushButton("Open camera")
+        btnCamera.clicked.connect(self.openCamera)
+        button_layout.addWidget(btnCamera)
+
+        btnCamera = QPushButton("Stop camera")
+        btnCamera.clicked.connect(self.stopCamera)
+        button_layout.addWidget(btnCamera)
+
+        layout.addLayout(button_layout)
+
+        # Add a label
+        self.label = QLabel()
+        self.label.setFixedSize(self.WINDOW_WIDTH - 30, self.WINDOW_HEIGHT - 160)
+        layout.addWidget(self.label)
+
+        # Add a text area
+        self.results = QTextEdit()
+        layout.addWidget(self.results)
+
+        # Set the layout
+        self.setLayout(layout)
+        self.setWindowTitle("Dynamsoft Barcode Reader")
+        self.setFixedSize(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
+
+
+    # https://stackoverflow.com/questions/1414781/prompt-on-exit-in-pyqt-application
+    def closeEvent(self, event):
+    
+        msg = "Close the app?"
+        reply = QMessageBox.question(self, 'Message', 
+                        msg, QMessageBox.Yes, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            self.stopCamera()
+            self.frameQueue.put("")
+            self.barcodeScanning.join()
+            self.frameQueue.close()
+            self.resultQueue.close()
+            event.accept()
+        else:
+            event.ignore()
+
+    def resizeImage(self, pixmap):
+        lwidth = self.label.maximumWidth()
+        pwidth = pixmap.width()
+        lheight = self.label.maximumHeight()
+        pheight = pixmap.height()
+
+        wratio = pwidth * 1.0 / lwidth
+        hratio = pheight * 1.0 / lheight
+
+        if pwidth > lwidth or pheight > lheight:
+            if wratio > hratio:
+                lheight = pheight / wratio
+            else:
+                lwidth = pwidth / hratio
+
+            scaled_pixmap = pixmap.scaled(lwidth, lheight)
+            return scaled_pixmap
+        else:
+            return pixmap
+
+    def showMessageBox(self, text):
+        msgBox = QMessageBox()
+        msgBox.setText(text)
+        msgBox.exec_()
+
+    def pickFile(self):
+        self.stopCamera()
+        # Load an image file.
+        filename = QFileDialog.getOpenFileName(self, 'Open file',
+                                               self._path, "Barcode images (*)")
+        if filename is None or filename[0] == '':
+            self.showMessageBox("No file selected")
+            return
+
+        # Read barcodes
+        frame, results = self._manager.decode_file(filename[0])
+        if frame is None:
+            self.showMessageBox("Cannot decode " + filename[0])
+            return
+        self.showResults(frame, results)
+
+    def openCamera(self):
+
+        if not self._cap.isOpened(): 
+            self.showMessageBox("Failed to open camera.")
+            return
+
+        self.timer.start(1000./24)
+    
+    def stopCamera(self):
+        self.timer.stop()
+
+    def showResults(self, frame, results):
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        image = QImage(frame, frame.shape[1], frame.shape[0], frame.strides[0], QImage.Format_RGB888)
+        pixmap = QPixmap.fromImage(image)
+        pixmap = self.resizeImage(pixmap)
+        self.label.setPixmap(pixmap)
+        self.results.setText(results)
+
+    def nextFrameUpdate(self):
+        ret, frame = self._cap.read()
+
+        if not ret:
+            self.showMessageBox('Failed to get camera frame!')
+            return
+
+        try:
+            self.frameQueue.put(frame.copy(), False, 10)
+        except:
+            pass
+
+        try:
+            self._results = self.resultQueue.get(False, 10)
+        except:
+            pass
+
+        out = ''
+        index = 0
+        
+        if self._results is not None:
+            thickness = 2
+            color = (0,255,0)
+            for result in self._results:
+                out += "Index: " + str(index) + "\n"
+                out += "Barcode format: " + result.barcode_format_string + '\n'
+                out += "Barcode value: " + result.barcode_text + '\n'
+                out += '-----------------------------------\n'
+                index += 1
+
+                points = result.localization_result.localization_points
+
+                cv2.line(frame, points[0], points[1], color, thickness)
+                cv2.line(frame, points[1], points[2], color, thickness)
+                cv2.line(frame, points[2], points[3], color, thickness)
+                cv2.line(frame, points[3], points[0], color, thickness)
+                cv2.putText(frame, result.barcode_text, points[0], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
+
+
+        self.showResults(frame, out)
+
+def main():
+    try:
+        with open(sys.argv[1]) as f:
+            license = f.read()
+    except:
+        license = ""
+
+    frameQueue, resultQueue, barcodeScanning = create_decoding_process(license)
+
+    app = QApplication(sys.argv)
+    ex = UI_Window(license, frameQueue, resultQueue, barcodeScanning)
+    ex.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    print(__doc__)
+    main()
