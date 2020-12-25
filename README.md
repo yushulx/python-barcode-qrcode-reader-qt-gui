@@ -16,7 +16,7 @@ This is a `cross-platform` GUI barcode reader implemented with `Python 3`, `PyQt
     - Windows, Linux and macOS
 
         ```
-        pip install PySide2
+        python3 -m pip install PySide2
         ```
 
     - Raspberry Pi OS
