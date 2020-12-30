@@ -53,12 +53,29 @@ class BarcodeManager():
         settings = self._reader.get_runtime_settings()
         settings.max_algorithm_thread_count = 1
         self._reader.update_runtime_settings(settings)
+        self._template = None
+        self._types = 0
+        self._types2 = 0
 
     def __decode_buffer(self, frame):
         if frame is None:
             return None, None
-
         
+        if self._template is not None and self._template is not '':
+            error = self._reader.init_runtime_settings_with_string(self._template)
+            if error[0] != EnumErrorCode.DBR_OK:
+                print(error[1])
+        
+        if self._types != 0:
+            settings = self._reader.get_runtime_settings()
+            settings.barcode_format_ids = self._types
+            ret = self._reader.update_runtime_settings(settings)
+
+        if self._types2 != 0:
+            settings = self._reader.get_runtime_settings()
+            settings.barcode_format_ids_2 = self._types2
+            ret = self._reader.update_runtime_settings(settings)
+
         results = self._reader.decode_buffer(frame)
         return frame, results
 
@@ -70,10 +87,13 @@ class BarcodeManager():
         return self.__decode_buffer(frame)
 
     def set_template(self, template):
-        self.template = template
+        self._template = template
 
     def set_barcode_types(self, types):
-        self.types = types
+        self._types = types
+    
+    def set_barcode_types_2(self, types):
+        self._types2 = types
 
     
 
