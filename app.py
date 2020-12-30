@@ -138,6 +138,7 @@ class UI_Window(QWidget):
         if frame is None:
             self.showMessageBox("Cannot decode " + filename[0])
             return
+            
         self.showResults(frame, results)
 
     def openCamera(self):
@@ -152,12 +153,34 @@ class UI_Window(QWidget):
         self.timer.stop()
 
     def showResults(self, frame, results):
+        out = ''
+        index = 0
+
+        if results is not None:
+            thickness = 2
+            color = (0,255,0)
+            
+            for result in results:
+                points = result.localization_result.localization_points
+                out += "Index: " + str(index) + "\n"
+                out += "Barcode format: " + result.barcode_format_string + '\n'
+                out += "Barcode value: " + result.barcode_text + '\n'
+                out += "Bounding box: " + str(points[0]) + ' ' + str(points[1]) + ' ' + str(points[2]) + ' ' + str(points[3]) + '\n'
+                out += '-----------------------------------\n'
+                index += 1
+
+                cv2.line(frame, points[0], points[1], color, thickness)
+                cv2.line(frame, points[1], points[2], color, thickness)
+                cv2.line(frame, points[2], points[3], color, thickness)
+                cv2.line(frame, points[3], points[0], color, thickness)
+                cv2.putText(frame, result.barcode_text, points[0], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
+
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image = QImage(frame, frame.shape[1], frame.shape[0], frame.strides[0], QImage.Format_RGB888)
         pixmap = QPixmap.fromImage(image)
         pixmap = self.resizeImage(pixmap)
         self.label.setPixmap(pixmap)
-        self.results.setText(results)
+        self.results.setText(out)
 
     def nextFrameUpdate(self):
         ret, frame = self._cap.read()
@@ -176,29 +199,7 @@ class UI_Window(QWidget):
         except:
             pass
 
-        out = ''
-        index = 0
-        
-        if self._results is not None:
-            thickness = 2
-            color = (0,255,0)
-            for result in self._results:
-                out += "Index: " + str(index) + "\n"
-                out += "Barcode format: " + result.barcode_format_string + '\n'
-                out += "Barcode value: " + result.barcode_text + '\n'
-                out += '-----------------------------------\n'
-                index += 1
-
-                points = result.localization_result.localization_points
-
-                cv2.line(frame, points[0], points[1], color, thickness)
-                cv2.line(frame, points[1], points[2], color, thickness)
-                cv2.line(frame, points[2], points[3], color, thickness)
-                cv2.line(frame, points[3], points[0], color, thickness)
-                cv2.putText(frame, result.barcode_text, points[0], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
-
-
-        self.showResults(frame, out)
+        self.showResults(frame, self._results)
 
 def main():
     try:

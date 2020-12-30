@@ -56,30 +56,11 @@ class BarcodeManager():
 
     def __decode_buffer(self, frame):
         if frame is None:
-            return None, ''
-        results = self._reader.decode_buffer(frame)
-        out = ''
-        index = 0
+            return None, None
+
         
-        if results is not None:
-            thickness = 2
-            color = (0,255,0)
-            for result in results:
-                out += "Index: " + str(index) + "\n"
-                out += "Barcode format: " + result.barcode_format_string + '\n'
-                out += "Barcode value: " + result.barcode_text + '\n'
-                out += '-----------------------------------\n'
-                index += 1
-
-                points = result.localization_result.localization_points
-
-                cv2.line(frame, points[0], points[1], color, thickness)
-                cv2.line(frame, points[1], points[2], color, thickness)
-                cv2.line(frame, points[2], points[3], color, thickness)
-                cv2.line(frame, points[3], points[0], color, thickness)
-                cv2.putText(frame, result.barcode_text, points[0], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
-
-        return frame, out
+        results = self._reader.decode_buffer(frame)
+        return frame, results
 
     def decode_frame(self, frame):
         return self.__decode_buffer(frame)
@@ -87,6 +68,12 @@ class BarcodeManager():
     def decode_file(self, filename):
         frame = cv2.imread(filename)
         return self.__decode_buffer(frame)
+
+    def set_template(self, template):
+        self.template = template
+
+    def set_barcode_types(self, types):
+        self.types = types
 
     
 
