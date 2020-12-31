@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_template.clicked.connect(self.loadTemplate)
 
     def openCamera(self):
-        # self.stopCamera()
+        self.stopCamera()
 
         width = 640; height = 480
         resolution = self.ui.comboBox.currentText()
