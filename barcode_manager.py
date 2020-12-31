@@ -102,12 +102,12 @@ class BarcodeManager():
     def set_barcode_types_2(self, types):
         self._types2 = types
 
-    def createBarcodeProcess(self):
-        self.destroyBarcodeProcess()
+    def create_barcode_process(self):
+        self.destroy_barcode_process()
 
         self.frameQueue, self.resultQueue, self.barcodeScanning = create_decoding_process(self._license)
     
-    def destroyBarcodeProcess(self):
+    def destroy_barcode_process(self):
         if self.frameQueue is not None:
             self.frameQueue.put("")
             self.frameQueue = None
@@ -124,13 +124,13 @@ class BarcodeManager():
             self.resultQueue.close()
             self.resultQueue = None
 
-    def appendFrame(self, frame):
+    def append_frame(self, frame):
         try:
             self.frameQueue.put(frame.copy(), False, 10)
         except:
             pass
 
-    def peekResutls(self):
+    def peek_results(self):
         try:
             return self.resultQueue.get(False, 10)
         except:

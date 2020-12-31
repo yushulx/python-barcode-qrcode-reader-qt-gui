@@ -139,11 +139,11 @@ class UI_Window(QWidget):
             self.showMessageBox("Failed to open camera.")
             return
 
-        self._barcodeManager.createBarcodeProcess()
+        self._barcodeManager.create_barcode_process()
         self.timer.start(1000./24)
     
     def stopCamera(self):
-        self._barcodeManager.destroyBarcodeProcess()
+        self._barcodeManager.destroy_barcode_process()
         self.timer.stop()
 
     def showResults(self, frame, results):
@@ -183,8 +183,8 @@ class UI_Window(QWidget):
             self.showMessageBox('Failed to get camera frame!')
             return
 
-        self._barcodeManager.appendFrame(frame)
-        self._results = self._barcodeManager.peekResutls()
+        self._barcodeManager.append_frame(frame)
+        self._results = self._barcodeManager.peek_results()
 
         self.showResults(frame, self._results)
 

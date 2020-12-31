@@ -85,7 +85,7 @@ class MainWindow(QMainWindow):
             return
 
         if not self.ui.checkBox_syncdisplay.isChecked():
-            self._barcodeManager.createBarcodeProcess()
+            self._barcodeManager.create_barcode_process()
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.nextFrameUpdate)
@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
                 self.timer.stop()
                 self.timer = None
 
-            self._barcodeManager.destroyBarcodeProcess()
+            self._barcodeManager.destroy_barcode_process()
         else:
             if self.timer is not None:
                 self.timer.stop()
@@ -118,8 +118,8 @@ class MainWindow(QMainWindow):
             return
 
         if not self.ui.checkBox_syncdisplay.isChecked():
-            self._barcodeManager.appendFrame(frame)
-            self._results = self._barcodeManager.peekResutls()
+            self._barcodeManager.append_frame(frame)
+            self._results = self._barcodeManager.peek_results()
         else:
             frame, self._results = self._barcodeManager.decode_frame(frame)
 
