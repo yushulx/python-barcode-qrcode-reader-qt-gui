@@ -86,7 +86,12 @@ class MainWindow(QMainWindow):
             self.showMessageBox('Error', "Failed to open camera.")
             return
 
-        self.createBarcodeProcess()
+        if not self.ui.checkBox_syncdisplay.isChecked():
+            self.createBarcodeProcess()
+        else:
+            self.timer = QTimer()
+            self.timer.timeout.connect(self.nextFrameUpdate)
+            self.timer.start(1000./24)
 
     def createBarcodeProcess(self):
         self.destroyBarcodeProcess()
@@ -102,7 +107,13 @@ class MainWindow(QMainWindow):
             self._cap.release()
             self._cap = None
 
-        self.destroyBarcodeProcess()
+        if not self.ui.checkBox_syncdisplay.isChecked():
+            self.destroyBarcodeProcess()
+        else:
+            if self.timer is not None:
+                self.timer.stop()
+                self.timer = None
+
         self._results = None
 
     def nextFrameUpdate(self):
@@ -112,15 +123,18 @@ class MainWindow(QMainWindow):
             self.showMessageBox('Error', 'Failed to get camera frame!')
             return
 
-        try:
-            self.frameQueue.put(frame.copy(), False, 10)
-        except:
-            pass
+        if not self.ui.checkBox_syncdisplay.isChecked():
+            try:
+                self.frameQueue.put(frame.copy(), False, 10)
+            except:
+                pass
 
-        try:
-            self._results = self.resultQueue.get(False, 10)
-        except:
-            pass
+            try:
+                self._results = self.resultQueue.get(False, 10)
+            except:
+                pass
+        else:
+            frame, self._results = self._barcodeManager.decode_frame(frame)
 
         self.showResults(frame, self._results)
 
