@@ -103,6 +103,7 @@ class MainWindow(QMainWindow):
             self._cap = None
 
         self.destroyBarcodeProcess()
+        self._results = None
 
     def nextFrameUpdate(self):
         ret, frame = self._cap.read()
@@ -244,14 +245,14 @@ class MainWindow(QMainWindow):
         out = ''
         index = 0
 
-        if results is not None:
+        if results is not None and results[0] is not None:
             if self.ui.checkBox_autostop.isChecked():
                 self.stopCamera()
 
             thickness = 2
             color = (0,255,0)
-            
-            for result in results:
+            out = 'Elapsed time: ' + "{:.2f}".format(results[1]) + 'ms\n\n'
+            for result in results[0]:
                 points = result.localization_result.localization_points
                 out += "Index: " + str(index) + "\n"
                 out += "Barcode format: " + result.barcode_format_string + '\n'

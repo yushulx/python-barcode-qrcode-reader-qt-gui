@@ -25,16 +25,19 @@ def process_barcode_frame(license, frameQueue, resultQueue):
         except:
             time.sleep(0.01)
             continue
-
+        
+        start, end = 0, 0
         try:
             frameHeight, frameWidth, channel = frame.shape[:3]
+            start = time.time()
             # results = reader.decode_buffer(frame)
             results = reader.decode_buffer_manually(np.array(frame).tobytes(), frameWidth, frameHeight, frame.strides[0], EnumImagePixelFormat.IPF_RGB_888)
+            end = time.time()
         except BarcodeReaderError as error:
             print(error)
 
         try:
-            resultQueue.put(results, False, 10)
+            resultQueue.put([results, (end - start) * 1000], False, 10)
         except:
             pass
 
@@ -76,8 +79,10 @@ class BarcodeManager():
             settings.barcode_format_ids_2 = self._types2
             ret = self._reader.update_runtime_settings(settings)
 
+        start = time.time()
         results = self._reader.decode_buffer(frame)
-        return frame, results
+        end = time.time()
+        return frame, [results, (end - start) * 1000]
 
     def decode_frame(self, frame):
         return self.__decode_buffer(frame)
