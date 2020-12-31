@@ -64,6 +64,7 @@ class MainWindow(QMainWindow):
 
     def openCamera(self):
         self.stopCamera()
+        self.set_parameters()
 
         width = 640; height = 480
         resolution = self.ui.comboBox.currentText()

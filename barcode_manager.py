@@ -6,11 +6,26 @@ import time
 import numpy as np
 
 
-def process_barcode_frame(license, frameQueue, resultQueue):
+def process_barcode_frame(license, frameQueue, resultQueue, template=None, types=0, types2=0):
     # Create Dynamsoft Barcode Reader
     reader = BarcodeReader()
     # Apply for a trial license: https://www.dynamsoft.com/customer/license/trialLicense
     reader.init_license(license)
+    if template is not None and template is not '':
+        error = reader.init_runtime_settings_with_string(template)
+        if error[0] != EnumErrorCode.DBR_OK:
+            print(error[1])
+    
+    if types != 0:
+        settings = reader.get_runtime_settings()
+        settings.barcode_format_ids = types
+        ret = reader.update_runtime_settings(settings)
+
+    if types2 != 0:
+        settings = reader.get_runtime_settings()
+        settings.barcode_format_ids_2 = types2
+        ret = reader.update_runtime_settings(settings)
+        
     settings = reader.get_runtime_settings()
     settings.max_algorithm_thread_count = 1
     reader.update_runtime_settings(settings)
@@ -41,13 +56,6 @@ def process_barcode_frame(license, frameQueue, resultQueue):
         except:
             pass
 
-def create_decoding_process(license):
-        size = 1
-        frameQueue = Queue(size)
-        resultQueue = Queue(size)
-        barcodeScanning = Process(target=process_barcode_frame, args=(license, frameQueue, resultQueue))
-        barcodeScanning.start()
-        return frameQueue, resultQueue, barcodeScanning
 
 class BarcodeManager():
     def __init__(self, license):
@@ -105,7 +113,11 @@ class BarcodeManager():
     def create_barcode_process(self):
         self.destroy_barcode_process()
 
-        self.frameQueue, self.resultQueue, self.barcodeScanning = create_decoding_process(self._license)
+        size = 1
+        self.frameQueue = Queue(size)
+        self.resultQueue = Queue(size)
+        self.barcodeScanning = Process(target=process_barcode_frame, args=(self._license, self.frameQueue, self.resultQueue, self._template, self._types, self._types2))
+        self.barcodeScanning.start()
     
     def destroy_barcode_process(self):
         if self.frameQueue is not None:
