@@ -41,6 +41,7 @@ Apply for a [free trial license](https://www.dynamsoft.com/customer/license/tria
 - Advanced demo:
 
     ```
+    pyside2-uic design.ui -o design.py
     python3 app_advanced.py license.txt
     ```
 
