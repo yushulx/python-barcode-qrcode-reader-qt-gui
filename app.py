@@ -18,12 +18,8 @@ import cv2
 
 class UI_Window(QWidget):
 
-    def __init__(self, license, frameQueue, resultQueue, barcodeScanning):
+    def __init__(self, license):
         QWidget.__init__(self)
-
-        self.frameQueue = frameQueue
-        self.resultQueue = resultQueue
-        self.barcodeScanning = barcodeScanning
 
         self.FRAME_WIDTH = 640
         self.FRAME_HEIGHT = 480
@@ -31,7 +27,7 @@ class UI_Window(QWidget):
         self.WINDOW_HEIGHT = 1000
         self._results = None
         # Initialize Dynamsoft Barcode Reader
-        self._manager = BarcodeManager(license)
+        self._barcodeManager = BarcodeManager(license)
 
         # Initialize OpenCV camera
         self._cap = cv2.VideoCapture(0)
@@ -91,10 +87,6 @@ class UI_Window(QWidget):
 
         if reply == QMessageBox.Yes:
             self.stopCamera()
-            self.frameQueue.put("")
-            self.barcodeScanning.join()
-            self.frameQueue.close()
-            self.resultQueue.close()
             event.accept()
         else:
             event.ignore()
@@ -134,7 +126,7 @@ class UI_Window(QWidget):
             return
 
         # Read barcodes
-        frame, results = self._manager.decode_file(filename[0])
+        frame, results = self._barcodeManager.decode_file(filename[0])
         if frame is None:
             self.showMessageBox("Cannot decode " + filename[0])
             return
@@ -147,9 +139,11 @@ class UI_Window(QWidget):
             self.showMessageBox("Failed to open camera.")
             return
 
+        self._barcodeManager.createBarcodeProcess()
         self.timer.start(1000./24)
     
     def stopCamera(self):
+        self._barcodeManager.destroyBarcodeProcess()
         self.timer.stop()
 
     def showResults(self, frame, results):
@@ -189,15 +183,8 @@ class UI_Window(QWidget):
             self.showMessageBox('Failed to get camera frame!')
             return
 
-        try:
-            self.frameQueue.put(frame.copy(), False, 10)
-        except:
-            pass
-
-        try:
-            self._results = self.resultQueue.get(False, 10)
-        except:
-            pass
+        self._barcodeManager.appendFrame(frame)
+        self._results = self._barcodeManager.peekResutls()
 
         self.showResults(frame, self._results)
 
@@ -208,10 +195,8 @@ def main():
     except:
         license = ""
 
-    frameQueue, resultQueue, barcodeScanning = create_decoding_process(license)
-
     app = QApplication(sys.argv)
-    ex = UI_Window(license, frameQueue, resultQueue, barcodeScanning)
+    ex = UI_Window(license)
     ex.show()
     sys.exit(app.exec_())
 
