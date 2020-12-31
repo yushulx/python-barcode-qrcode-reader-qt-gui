@@ -24,20 +24,20 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         
         # Initialization
+        self._license = license
         self._all_data = {}
-        self.frameQueue, self.resultQueue, self.barcodeScanning = create_decoding_process(license)
+        self.frameQueue, self.resultQueue, self.barcodeScanning = None, None, None
         self._results = None
 
         # Dynamsoft Barcode Reader
-        self._manager = BarcodeManager(license)
+        self._barcodeManager = BarcodeManager(license)
 
         # Create a timer.
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.nextFrameUpdate)
+        self.timer = None
 
         # Open camera
         self._cap = None
-        self.openCamera()
+        # self.openCamera()
 
         # Resolution list
         self.ui.comboBox.currentTextChanged.connect(self.onComboBoxChanged)
@@ -48,9 +48,6 @@ class MainWindow(QMainWindow):
         # Camera button
         self.ui.pushButton_open.clicked.connect(self.openCamera)
         self.ui.pushButton_stop.clicked.connect(self.stopCamera)
-
-        btnCamera = QPushButton("Stop camera")
-        btnCamera.clicked.connect(self.stopCamera)
 
         # Load file
         self.ui.actionOpen_File.triggered.connect(self.openFile)
@@ -68,7 +65,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_template.clicked.connect(self.loadTemplate)
 
     def openCamera(self):
-        self.stopCamera()
+        # self.stopCamera()
 
         width = 640; height = 480
         resolution = self.ui.comboBox.currentText()
@@ -89,12 +86,23 @@ class MainWindow(QMainWindow):
             self.showMessageBox('Error', "Failed to open camera.")
             return
 
+        self.createBarcodeProcess()
+
+    def createBarcodeProcess(self):
+        self.destroyBarcodeProcess()
+
+        self.frameQueue, self.resultQueue, self.barcodeScanning = create_decoding_process(self._license)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.nextFrameUpdate)
         self.timer.start(1000./24)
     
     def stopCamera(self):
-        self.timer.stop()
+        
         if self._cap is not None:
             self._cap.release()
+            self._cap = None
+
+        self.destroyBarcodeProcess()
 
     def nextFrameUpdate(self):
         ret, frame = self._cap.read()
@@ -144,7 +152,7 @@ class MainWindow(QMainWindow):
     def set_parameters(self):
         # Get template
         template = self.ui.textEdit_template.toPlainText()
-        self._manager.set_template(template)
+        self._barcodeManager.set_template(template)
 
         # Get barcode types
         types = 0; types2 = 0
@@ -168,15 +176,15 @@ class MainWindow(QMainWindow):
         if (self.ui.checkBox_dotcode.isChecked()): types2 |= EnumBarcodeFormat_2.BF2_DOTCODE
         if (self.ui.checkBox_postalcode.isChecked()): types2 |= EnumBarcodeFormat_2.BF2_POSTALCODE
         
-        self._manager.set_barcode_types(types)
-        self._manager.set_barcode_types_2(types2)
+        self._barcodeManager.set_barcode_types(types)
+        self._barcodeManager.set_barcode_types_2(types2)
 
     def decodeFile(self, filename):      
         self.stopCamera()  
         self.set_parameters()
 
         # Read barcodes
-        frame, results = self._manager.decode_file(filename)
+        frame, results = self._barcodeManager.decode_file(filename)
         if frame is None:
             self.showMessageBox('Error', 'Cannot decode ' + filename)
             return
@@ -237,6 +245,9 @@ class MainWindow(QMainWindow):
         index = 0
 
         if results is not None:
+            if self.ui.checkBox_autostop.isChecked():
+                self.stopCamera()
+
             thickness = 2
             color = (0,255,0)
             
@@ -271,11 +282,26 @@ class MainWindow(QMainWindow):
         msgBox.setText(content)
         msgBox.exec_()
 
-    def destroyProcess(self):
-        self.frameQueue.put("")
-        self.barcodeScanning.join()
-        self.frameQueue.close()
-        self.resultQueue.close()
+    def destroyBarcodeProcess(self):
+        if self.timer is not None:
+            self.timer.stop()
+            self.timer = None
+
+        if self.frameQueue is not None:
+            self.frameQueue.put("")
+            self.frameQueue = None
+
+        if self.barcodeScanning is not None:
+            self.barcodeScanning.join()
+            self.barcodeScanning = None
+
+        if self.frameQueue is not None:
+            self.frameQueue.close()
+            self.frameQueue = None
+
+        if self.resultQueue is not None:
+            self.resultQueue.close()
+            self.resultQueue = None
 
     def closeEvent(self, event):
     
@@ -284,7 +310,7 @@ class MainWindow(QMainWindow):
                         msg, QMessageBox.Yes, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
-            self.destroyProcess()
+            self.destroyBarcodeProcess()
 
             event.accept()
         else:
