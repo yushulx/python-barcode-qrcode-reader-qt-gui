@@ -202,4 +202,8 @@ class BarcodeManager():
 
     def get_template(self):
         return self._reader.output_settings_to_json_string()
+
+    def set_license(self, key):
+        return self._reader.init_license(key)
+        
     

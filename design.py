@@ -34,6 +34,8 @@ class Ui_MainWindow(object):
         self.actionOpen_Folder.setObjectName(u"actionOpen_Folder")
         self.actionExport_template = QAction(MainWindow)
         self.actionExport_template.setObjectName(u"actionExport_template")
+        self.actionEnter_License_Key = QAction(MainWindow)
+        self.actionEnter_License_Key.setObjectName(u"actionEnter_License_Key")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
@@ -236,6 +238,7 @@ class Ui_MainWindow(object):
         self.menuAbout.addAction(self.actionOpen_Folder)
         self.menuAbout.addAction(self.actionExport_template)
         self.menuHelp.addAction(self.actionAbout)
+        self.menuHelp.addAction(self.actionEnter_License_Key)
 
         self.retranslateUi(MainWindow)
 
@@ -251,6 +254,7 @@ class Ui_MainWindow(object):
         self.actionOpen_File.setText(QCoreApplication.translate("MainWindow", u"Open File...", None))
         self.actionOpen_Folder.setText(QCoreApplication.translate("MainWindow", u"Open Folder...", None))
         self.actionExport_template.setText(QCoreApplication.translate("MainWindow", u"Save Template", None))
+        self.actionEnter_License_Key.setText(QCoreApplication.translate("MainWindow", u"Enter License Key", None))
         self.groupBox_camera.setTitle(QCoreApplication.translate("MainWindow", u"Camera", None))
         self.comboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"640 x 480", None))
         self.comboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"320 x 240", None))

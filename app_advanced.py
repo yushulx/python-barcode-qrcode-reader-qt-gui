@@ -7,7 +7,7 @@ Usage:
 
 import sys
 from PySide2.QtGui import QPixmap, QImage
-from PySide2.QtWidgets import QApplication, QMainWindow
+from PySide2.QtWidgets import QApplication, QMainWindow, QInputDialog
 from PySide2.QtCore import QFile, QTimer
 from PySide2.QtWidgets import *
 from design import Ui_MainWindow
@@ -58,6 +58,9 @@ class MainWindow(QMainWindow):
 
         # About
         self.ui.actionAbout.triggered.connect(self.about)
+
+        # Set license
+        self.ui.actionEnter_License_Key.triggered.connect(self.setLicense)
 
         ## List widget
         self.ui.listWidget.currentItemChanged.connect(self.currentItemChanged)
@@ -230,6 +233,15 @@ class MainWindow(QMainWindow):
             self.appendFile(filename)
 
         self.decodeFile(files[0])
+
+    def setLicense(self):
+        key = QInputDialog.getText(self, 'License', 'Enter license key')
+        if key[1]:
+            error = self._barcodeManager.set_license(key[0])
+            if error[0] != EnumErrorCode.DBR_OK:
+                self.showMessageBox('Error', error[1])
+            else:
+                self.ui.statusbar.showMessage('Dynamsoft Barcode Reader is activated successfully!')
 
     def exportTemplate(self):
         filename = QFileDialog.getSaveFileName(self, 'Save File',
