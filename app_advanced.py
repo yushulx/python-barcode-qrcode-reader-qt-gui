@@ -53,14 +53,20 @@ class MainWindow(QMainWindow):
         # Load directory
         self.ui.actionOpen_Folder.triggered.connect(self.openFolder)
 
+        # Export template
+        self.ui.actionExport_template.triggered.connect(self.exportTemplate)
+
         # About
         self.ui.actionAbout.triggered.connect(self.about)
 
         ## List widget
         self.ui.listWidget.currentItemChanged.connect(self.currentItemChanged)
 
-        ## template button
+        ## Template load button
         self.ui.pushButton_template.clicked.connect(self.loadTemplate)
+
+        ## Template export button
+        self.ui.pushButton_export_template.clicked.connect(self.exportTemplate)
 
     def openCamera(self):
         self.stopCamera()
@@ -183,6 +189,8 @@ class MainWindow(QMainWindow):
         self._barcodeManager.set_barcode_types_2(types2)
 
     def decodeFile(self, filename):      
+        self.ui.statusbar.showMessage(filename)
+
         self.stopCamera()  
         self.set_parameters()
 
@@ -197,7 +205,7 @@ class MainWindow(QMainWindow):
         self.showResults(frame, results)
 
     def openFile(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open file',
+        filename = QFileDialog.getOpenFileName(self, 'Open File',
                                                self._path, "Barcode images (*)")
         if filename is None or filename[0] == '':
             # self.showMessageBox('Open File...', "No file selected")
@@ -222,6 +230,20 @@ class MainWindow(QMainWindow):
             self.appendFile(filename)
 
         self.decodeFile(files[0])
+
+    def exportTemplate(self):
+        filename = QFileDialog.getSaveFileName(self, 'Save File',
+                                               self._path, "Barcode Template (*.json)")
+        if filename is None or filename[0] == '':
+            # self.showMessageBox('Open File...', "No file selected")
+            return
+
+        filename = filename[0]
+        json = self._barcodeManager.get_template()
+        with open(filename, 'w') as f:
+            f.write(json)
+
+        self.ui.statusbar.showMessage('File saved to ' + filename)
 
     def resizeImage(self, pixmap):
         lwidth = self.ui.label.maximumWidth()

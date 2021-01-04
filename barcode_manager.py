@@ -199,4 +199,7 @@ class BarcodeManager():
             return self.resultQueue.get(False, 10)
         except:
             return None
+
+    def get_template(self):
+        return self._reader.output_settings_to_json_string()
     
