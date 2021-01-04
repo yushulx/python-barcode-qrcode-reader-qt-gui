@@ -70,10 +70,7 @@ class BarcodeManager():
         self._license = license
         self.frameQueue, self.resultQueue, self.barcodeScanning = None, None, None
 
-    def __decode_buffer(self, frame):
-        if frame is None:
-            return None, None
-        
+    def __init_params(self):
         if self._template is not None and self._template is not '':
             error = self._reader.init_runtime_settings_with_string(self._template)
             if error[0] != EnumErrorCode.DBR_OK:
@@ -89,6 +86,60 @@ class BarcodeManager():
             settings.barcode_format_ids_2 = self._types2
             ret = self._reader.update_runtime_settings(settings)
 
+    def __decode_file(self, filename):
+        self.__init_params()
+
+        settings = self._reader.get_runtime_settings()
+        settings.intermediate_result_types = EnumIntermediateResultType.IRT_ORIGINAL_IMAGE 
+        settings.intermediate_result_saving_mode = EnumIntermediateResultSavingMode.IRSM_MEMORY
+        error = self._reader.update_runtime_settings(settings)
+
+        start = time.time()
+        results = self._reader.decode_file(filename)
+        end = time.time()
+
+        intermediate_results = self._reader.get_all_intermediate_results()
+
+        imageData =  intermediate_results[0].results[0]
+        buffer = imageData.bytes
+        width = imageData.width
+        height = imageData.height
+        stride = imageData.stride
+        format = imageData.image_pixel_format
+        channel = 3
+        if format == EnumImagePixelFormat.IPF_RGB_888:
+            channel = 3
+        elif format == EnumImagePixelFormat.IPF_BINARY or format == EnumImagePixelFormat.IPF_GRAYSCALED or format == EnumImagePixelFormat.IPF_BINARYINVERTED:
+            channel = 1
+
+        if format == EnumImagePixelFormat.IPF_BINARY or format == EnumImagePixelFormat.IPF_BINARYINVERTED:
+            whiteValue = 1
+            if format == EnumImagePixelFormat.IPF_BINARYINVERTED:
+                whiteValue = 0
+            
+            binData = bytearray(len(buffer) << 3)
+            count = 0
+            for pos in range(len(buffer)):
+                for bit in range(7, -1, -1):
+                    if (buffer[pos] >> bit) & 0x01 == whiteValue:
+                        binData[count] = 255
+                    else:
+                        binData[count] = 0
+                    
+                    count += 1
+
+            frame = np.ndarray((height, width, channel), np.uint8, binData, 0, (stride << 3, channel, 1))
+        else:
+
+            frame = np.ndarray((height, width, channel), np.uint8, buffer, 0, (stride, channel, 1))
+        return frame, [results, (end - start) * 1000]
+
+    def __decode_buffer(self, frame):
+        if frame is None:
+            return None, None
+        
+        self.__init_params()
+
         start = time.time()
         results = self._reader.decode_buffer(frame)
         end = time.time()
@@ -98,8 +149,9 @@ class BarcodeManager():
         return self.__decode_buffer(frame)
 
     def decode_file(self, filename):
-        frame = cv2.imread(filename)
-        return self.__decode_buffer(frame)
+        # frame = cv2.imread(filename)
+        # return self.__decode_buffer(frame)
+        return self.__decode_file(filename)
 
     def set_template(self, template):
         self._template = template
