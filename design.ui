@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1500</width>
+    <width>1600</width>
     <height>848</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1500</width>
+    <width>1600</width>
     <height>848</height>
    </size>
   </property>
@@ -48,7 +48,7 @@
     <item row="0" column="2">
      <widget class="QGroupBox" name="groupBox_camera">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -154,10 +154,10 @@
       </widget>
      </widget>
     </item>
-    <item row="2" column="2">
-     <widget class="QGroupBox" name="groupBox_barcode">
+    <item row="1" column="2">
+     <widget class="QGroupBox" name="groupBox_template">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -166,6 +166,99 @@
        <size>
         <width>450</width>
         <height>200</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Template</string>
+      </property>
+      <widget class="QPushButton" name="pushButton_template">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>20</y>
+         <width>141</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Load Template File</string>
+       </property>
+      </widget>
+      <widget class="QTextEdit" name="textEdit_template">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>381</width>
+         <height>121</height>
+        </rect>
+       </property>
+       <property name="placeholderText">
+        <string>Paste template string here</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_export_template">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>20</y>
+         <width>141</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Export Template File</string>
+       </property>
+      </widget>
+     </widget>
+    </item>
+    <item row="0" column="0" rowspan="4">
+     <widget class="QListWidget" name="listWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" rowspan="4">
+     <widget class="QLabel" name="label">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>800</width>
+        <height>800</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QGroupBox" name="groupBox_barcode">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>450</width>
+        <height>220</height>
        </size>
       </property>
       <property name="title">
@@ -350,7 +443,7 @@
          <x>9</x>
          <y>139</y>
          <width>431</width>
-         <height>101</height>
+         <height>71</height>
         </rect>
        </property>
        <property name="title">
@@ -506,61 +599,7 @@
     <item row="3" column="2">
      <widget class="QTextEdit" name="textEdit_results">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>450</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="documentTitle">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" rowspan="4">
-     <widget class="QListWidget" name="listWidget">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1" rowspan="4">
-     <widget class="QLabel" name="label">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>800</width>
-        <height>800</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="2">
-     <widget class="QGroupBox" name="groupBox_template">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -571,48 +610,9 @@
         <height>200</height>
        </size>
       </property>
-      <property name="title">
-       <string>Template</string>
+      <property name="documentTitle">
+       <string/>
       </property>
-      <widget class="QPushButton" name="pushButton_template">
-       <property name="geometry">
-        <rect>
-         <x>50</x>
-         <y>20</y>
-         <width>141</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Load Template File</string>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="textEdit_template">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>60</y>
-         <width>381</width>
-         <height>121</height>
-        </rect>
-       </property>
-       <property name="placeholderText">
-        <string>Paste template string here</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_export_template">
-       <property name="geometry">
-        <rect>
-         <x>220</x>
-         <y>20</y>
-         <width>141</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Export Template File</string>
-       </property>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -622,7 +622,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1500</width>
+     <width>1600</width>
      <height>26</height>
     </rect>
    </property>
