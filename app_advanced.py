@@ -246,9 +246,9 @@ class MainWindow(QMainWindow):
         self.ui.statusbar.showMessage('File saved to ' + filename)
 
     def resizeImage(self, pixmap):
-        lwidth = self.ui.label.maximumWidth()
+        lwidth = self.ui.label.width()
         pwidth = pixmap.width()
-        lheight = self.ui.label.maximumHeight()
+        lheight = self.ui.label.height()
         pheight = pixmap.height()
 
         wratio = pwidth * 1.0 / lwidth
