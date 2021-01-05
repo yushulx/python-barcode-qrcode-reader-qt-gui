@@ -149,9 +149,11 @@ class BarcodeManager():
         return self.__decode_buffer(frame)
 
     def decode_file(self, filename):
-        # frame = cv2.imread(filename)
-        # return self.__decode_buffer(frame)
-        return self.__decode_file(filename)
+        if filename.endswith('.gif') or filename.endswith('.pdf'):
+            return self.__decode_file(filename)
+        else:
+            frame = cv2.imread(filename)
+            return self.__decode_buffer(frame)
 
     def set_template(self, template):
         self._template = template
