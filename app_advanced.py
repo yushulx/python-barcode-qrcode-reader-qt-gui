@@ -6,9 +6,9 @@ Usage:
 '''
 
 import sys
-from PySide2.QtGui import QPixmap, QImage
+from PySide2.QtGui import QPixmap, QImage, QPainter, QPen, QColor
 from PySide2.QtWidgets import QApplication, QMainWindow, QInputDialog
-from PySide2.QtCore import QFile, QTimer
+from PySide2.QtCore import QFile, QTimer, QEvent
 from PySide2.QtWidgets import *
 from design import Ui_MainWindow
 
@@ -26,6 +26,7 @@ class MainWindow(QMainWindow):
         # Initialization
         self._all_data = {}
         self._results = None
+        self._painter = None
 
         # Dynamsoft Barcode Reader
         self._barcodeManager = BarcodeManager(license)
@@ -71,9 +72,53 @@ class MainWindow(QMainWindow):
         ## Template export button
         self.ui.pushButton_export_template.clicked.connect(self.exportTemplate)
 
+        self.ui.label.mouseMoveEvent = self.labelMouseMoveEvent
+        self.ui.label.mousePressEvent = self.labelMousePressEvent
+        self.ui.label.mouseReleaseEvent = self.labelMouseReleaseEvent
+        self._pixmap = None
+        self.x = 0
+        self.y = 0
+        self.endx = 0
+        self.endy = 0
+        self.clicked = False
+
+    def paintEvent(self, event):
+        if self._pixmap is not None:
+            self.ui.label.setPixmap(self._pixmap)
+            painter = QPainter(self.ui.label.pixmap())
+            xshift = self.ui.label.width() - self._pixmap.width()
+            yshift = self.ui.label.height() - self._pixmap.height()
+            pen = QPen()
+            # pen.setWidth(10)
+            pen.setColor(QColor('red'))
+            painter.setPen(pen)
+            painter.drawRect(self.x, self.y - yshift / 2, self.endx - self.x, self.endy - self.y)
+            painter.end()
+
+    def labelMouseReleaseEvent(self, event):
+        self.clicked = False
+
+    def labelMousePressEvent(self, event):
+        self.clicked = True
+        self.x = event.x()
+        self.y = event.y()
+        self.endx = self.x
+        self.endy = self.y
+
+    def labelMouseMoveEvent(self, event):
+        if self.clicked:
+            self.endx = event.x()
+            self.endy = event.y()
+
+    def resetCoordinates(self):
+        self.endx = self.x
+        self.endy = self.y 
+
     def openCamera(self):
+        self.resetCoordinates()
+
         self.stopCamera()
-        self.set_parameters()
+        self.setParameters()
 
         width = 640; height = 480
         resolution = self.ui.comboBox.currentText()
@@ -161,7 +206,7 @@ class MainWindow(QMainWindow):
         filename = current.text()
         self.decodeFile(filename)
 
-    def set_parameters(self):
+    def setParameters(self):
         # Get template
         template = self.ui.textEdit_template.toPlainText()
         self._barcodeManager.set_template(template)
@@ -191,11 +236,12 @@ class MainWindow(QMainWindow):
         self._barcodeManager.set_barcode_types(types)
         self._barcodeManager.set_barcode_types_2(types2)
 
-    def decodeFile(self, filename):      
+    def decodeFile(self, filename):     
+        self.resetCoordinates()
         self.ui.statusbar.showMessage(filename)
 
         self.stopCamera()  
-        self.set_parameters()
+        self.setParameters()
 
         # Read barcodes
         frame, results = self._barcodeManager.decode_file(filename)
@@ -306,8 +352,8 @@ class MainWindow(QMainWindow):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image = QImage(frame, frame.shape[1], frame.shape[0], frame.strides[0], QImage.Format_RGB888)
         pixmap = QPixmap.fromImage(image)
-        pixmap = self.resizeImage(pixmap)
-        self.ui.label.setPixmap(pixmap)
+        self._pixmap = self.resizeImage(pixmap)
+        self.ui.label.setPixmap(self._pixmap)
         self.ui.textEdit_results.setText(out)
 
     def about(self):
@@ -326,6 +372,7 @@ class MainWindow(QMainWindow):
                         msg, QMessageBox.Yes, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
+            # self._painter.end()
             self.stopCamera()
 
             event.accept()

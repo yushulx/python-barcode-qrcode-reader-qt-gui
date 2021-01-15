@@ -115,6 +115,7 @@ class Ui_MainWindow(object):
         self.label.setSizePolicy(sizePolicy4)
         self.label.setMinimumSize(QSize(800, 800))
         self.label.setMaximumSize(QSize(16777215, 16777215))
+        self.label.setMouseTracking(True)
 
         self.gridLayout.addWidget(self.label, 0, 1, 4, 1)
 
