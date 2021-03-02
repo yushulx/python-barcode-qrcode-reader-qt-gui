@@ -6,7 +6,7 @@ Usage:
 '''
 
 from dbr import *
-from PySide2.QtWidgets import QApplication, QMainWindow, QInputDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QInputDialog
 import cv2
 
 

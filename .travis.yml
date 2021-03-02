@@ -14,15 +14,9 @@ jobs:
     - os: linux
       arch: amd64
       env: OS=amd64_linux
-    - os: windows
-      arch: amd64
-      env: OS=windows
-    - os: osx
-      arch: amd64
-      env: OS=osx
 
 install:
-  - pip install dbr opencv-python pyside2
+  - pip install dbr opencv-python pyside6
 
 branches:
   only:
