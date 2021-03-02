@@ -1,0 +1,32 @@
+language: python
+
+python:
+  - "3.6"      
+  - "3.7"
+  - "3.8"
+  - "3.9"
+
+jobs:
+  include:
+    - os: linux
+      arch: arm64
+      env: OS=arm64_linux
+    - os: linux
+      arch: amd64
+      env: OS=amd64_linux
+    - os: windows
+      arch: amd64
+      env: OS=windows
+    - os: osx
+      arch: amd64
+      env: OS=osx
+
+install:
+  - pip install dbr opencv-python pyside2
+
+branches:
+  only:
+    - main
+
+script:
+    - python ./test.py ./images/1D-1-OverExposure.jpg
