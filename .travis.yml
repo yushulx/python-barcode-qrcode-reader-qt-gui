@@ -6,17 +6,15 @@ python:
   - "3.8"
   - "3.9"
 
-jobs:
-  include:
-    - os: linux
-      arch: arm64
-      env: OS=arm64_linux
-    - os: linux
-      arch: amd64
-      env: OS=amd64_linux
+os:
+  - linux
+
+arch:
+  - arm64
+  - amd64
 
 install:
-  - pip install dbr opencv-python pyside6
+  - pip install dbr opencv-python
 
 branches:
   only:

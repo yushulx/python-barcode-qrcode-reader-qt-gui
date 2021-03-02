@@ -6,7 +6,6 @@ Usage:
 '''
 
 from dbr import *
-from PySide6.QtWidgets import QApplication, QMainWindow, QInputDialog
 import cv2
 
 
@@ -35,7 +34,6 @@ def main():
     except BarcodeReaderError as bre:
         print(bre)
 
-    app = QApplication(sys.argv)
     print('Quit the app.')
 
 
