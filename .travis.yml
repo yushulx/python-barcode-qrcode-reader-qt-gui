@@ -34,24 +34,10 @@ jobs:
       python: 3.9    
       os: linux
       arch: arm64       
-    - name: "Python 3.7 on macOS"
-      os: osx
-      osx_image: xcode10
-      language: shell  
-      before_install:
-        - python3 --version
-    - name: "Python 3.8 on macOS"
-      os: osx
-      osx_image: xcode11 
-      language: shell  
-      before_install:
-        - python3 --version
-    - name: "Python 3.9 on macOS"
+    - name: "Python on macOS"
       os: osx
       osx_image: xcode12 
-      language: shell  
-      before_install:
-        - python3 --version
+      language: shell       
     - name: "Python 3.6.0 on Windows"
       os: windows           
       language: shell       
