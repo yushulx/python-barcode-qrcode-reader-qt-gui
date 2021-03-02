@@ -34,9 +34,9 @@ jobs:
       python: 3.9    
       os: linux
       arch: arm64       
-    - name: "Python 3.7.4 on macOS"
+    - name: "Python on macOS"
       os: osx
-      osx_image: xcode11.2  
+      osx_image: xcode12 
       language: shell       
     - name: "Python 3.6.0 on Windows"
       os: windows           
@@ -75,4 +75,4 @@ branches:
     - main
 
 script:
-    - python ./test.py ./images/1D-1-OverExposure.jpg || python my_app.py ./test.py ./images/1D-1-OverExposure.jpg
+    - python3 ./test.py ./images/1D-1-OverExposure.jpg || python my_app.py ./test.py ./images/1D-1-OverExposure.jpg
