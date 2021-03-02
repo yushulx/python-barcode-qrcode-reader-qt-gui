@@ -34,14 +34,30 @@ jobs:
       python: 3.9    
       os: linux
       arch: arm64       
-    - name: "Python 3.6 on macOS"
+    - name: "Python 3.7 on macOS"
       os: osx
       osx_image: xcode11 
       language: shell   
       addons:
         homebrew:
           packages:  
-          - python@3.6  
+          - python@3.7
+    - name: "Python 3.8 on macOS"
+      os: osx
+      osx_image: xcode11 
+      language: shell   
+      addons:
+        homebrew:
+          packages:  
+          - python@3.8
+    - name: "Python 3.9 on macOS"
+      os: osx
+      osx_image: xcode11 
+      language: shell   
+      addons:
+        homebrew:
+          packages:  
+          - python@3.9  
     - name: "Python 3.6.0 on Windows"
       os: windows           
       language: shell       
@@ -79,4 +95,8 @@ branches:
     - main
 
 script:
-    - python3 ./test.py ./images/1D-1-OverExposure.jpg || python ./test.py ./images/1D-1-OverExposure.jpg
+    - if [[ ${TRAVIS_OS_NAME} == "windows" ]]; then
+        python ./test.py ./images/1D-1-OverExposure.jpg;
+      else
+        python3 ./test.py ./images/1D-1-OverExposure.jpg;
+      fi
