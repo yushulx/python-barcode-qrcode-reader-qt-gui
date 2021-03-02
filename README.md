@@ -1,4 +1,7 @@
 # Python GUI Barcode Reader
+
+[![Travis CI status](https://travis-ci.com/Dynamsoft/python-gui-barcode-reader.svg?branch=main)](https://travis-ci.com/github/Dynamsoft/python-gui-barcode-reader)
+
 This is a `cross-platform` GUI barcode reader implemented with `Python 3`, `PyQt`, and [Dynamsoft Python Barcode SDK](https://www.dynamsoft.com/barcode-reader/programming/python/). You can use it on `Windows`, `Linux`, `macOS` and `Raspberry Pi OS`.
 
 ## Requirements

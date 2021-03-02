@@ -1,24 +1,78 @@
 language: python
 
-python:
-  - "3.6"      
-  - "3.7"
-  - "3.8"
-  - "3.9"
-
-os:
-  - linux
-
-arch:
-  - arm64
-  - amd64
+jobs:
+  include:
+    - name: "Python 3.6.0 on AMD64 Linux"
+      python: 3.6
+      os: linux
+      arch: amd64
+    - name: "Python 3.7.0 on AMD64 Linux"
+      python: 3.7 
+      os: linux
+      arch: amd64
+    - name: "Python 3.8.0 on AMD64 Linux"
+      python: 3.8 
+      os: linux
+      arch: amd64
+    - name: "Python 3.9.0 on AMD64 Linux"
+      python: 3.9  
+      os: linux
+      arch: amd64
+    - name: "Python 3.6.0 on ARM64 Linux"
+      python: 3.6
+      os: linux
+      arch: arm64
+    - name: "Python 3.7.0 on ARM64 Linux"
+      python: 3.7 
+      os: linux
+      arch: arm64
+    - name: "Python 3.8.0 on ARM64 Linux"
+      python: 3.8 
+      os: linux
+      arch: arm64
+    - name: "Python 3.9.0 on ARM64 Linux"
+      python: 3.9    
+      os: linux
+      arch: arm64       
+    - name: "Python 3.7.4 on macOS"
+      os: osx
+      osx_image: xcode11.2  
+      language: shell       
+    - name: "Python 3.6.0 on Windows"
+      os: windows           
+      language: shell       
+      before_install:
+        - choco install python --version 3.6.0
+        - python -m pip install --upgrade pip
+      env: PATH=/c/Python36:/c/Python36/Scripts:$PATH
+    - name: "Python 3.7.0 on Windows"
+      os: windows           
+      language: shell       
+      before_install:
+        - choco install python --version 3.7.0
+        - python -m pip install --upgrade pip
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+    - name: "Python 3.8.0 on Windows"
+      os: windows           
+      language: shell       
+      before_install:
+        - choco install python --version 3.8.0
+        - python -m pip install --upgrade pip
+      env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
+    - name: "Python 3.9.0 on Windows"
+      os: windows           
+      language: shell       
+      before_install:
+        - choco install python --version 3.9.0
+        - python -m pip install --upgrade pip
+      env: PATH=/c/Python39:/c/Python39/Scripts:$PATH
 
 install:
-  - pip install dbr opencv-python
+  - pip3 install dbr opencv-python
 
 branches:
   only:
     - main
 
 script:
-    - python ./test.py ./images/1D-1-OverExposure.jpg
+    - python ./test.py ./images/1D-1-OverExposure.jpg || python my_app.py ./test.py ./images/1D-1-OverExposure.jpg
