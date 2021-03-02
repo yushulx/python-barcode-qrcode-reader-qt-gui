@@ -6,10 +6,10 @@ Usage:
 '''
 
 import sys
-from PySide2.QtGui import QPixmap, QImage
+from PySide6.QtGui import QPixmap, QImage
 
-from PySide2.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QTextEdit, QMessageBox, QHBoxLayout
-from PySide2.QtCore import QTimer
+from PySide6.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QTextEdit, QMessageBox, QHBoxLayout
+from PySide6.QtCore import QTimer
 
 from barcode_manager import *
 import os

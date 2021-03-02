@@ -6,10 +6,10 @@ Usage:
 '''
 
 import sys
-from PySide2.QtGui import QPixmap, QImage, QPainter, QPen, QColor
-from PySide2.QtWidgets import QApplication, QMainWindow, QInputDialog
-from PySide2.QtCore import QFile, QTimer, QEvent
-from PySide2.QtWidgets import *
+from PySide6.QtGui import QPixmap, QImage, QPainter, QPen, QColor
+from PySide6.QtWidgets import QApplication, QMainWindow, QInputDialog
+from PySide6.QtCore import QFile, QTimer, QEvent
+from PySide6.QtWidgets import *
 from design import Ui_MainWindow
 
 from barcode_manager import *
@@ -85,15 +85,15 @@ class MainWindow(QMainWindow):
     def paintEvent(self, event):
         if self._pixmap is not None:
             self.ui.label.setPixmap(self._pixmap)
-            painter = QPainter(self.ui.label.pixmap())
-            xshift = self.ui.label.width() - self._pixmap.width()
-            yshift = self.ui.label.height() - self._pixmap.height()
-            pen = QPen()
+            # painter = QPainter(self.ui.label.pixmap())
+            # xshift = self.ui.label.width() - self._pixmap.width()
+            # yshift = self.ui.label.height() - self._pixmap.height()
+            # pen = QPen()
             # pen.setWidth(10)
-            pen.setColor(QColor('red'))
-            painter.setPen(pen)
-            painter.drawRect(self.x, self.y - yshift / 2, self.endx - self.x, self.endy - self.y)
-            painter.end()
+            # pen.setColor(QColor('red'))
+            # painter.setPen(pen)
+            # painter.drawRect(self.x, self.y - yshift / 2, self.endx - self.x, self.endy - self.y)
+            # painter.end()
 
     def labelMouseReleaseEvent(self, event):
         self.clicked = False
