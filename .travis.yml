@@ -34,30 +34,10 @@ jobs:
       python: 3.9    
       os: linux
       arch: arm64       
-    - name: "Python 3.7 on macOS"
+    - name: "Python on macOS"
       os: osx
-      osx_image: xcode11 
-      language: shell   
-      addons:
-        homebrew:
-          packages:  
-          - python@3.7
-    - name: "Python 3.8 on macOS"
-      os: osx
-      osx_image: xcode11 
-      language: shell   
-      addons:
-        homebrew:
-          packages:  
-          - python@3.8
-    - name: "Python 3.9 on macOS"
-      os: osx
-      osx_image: xcode11 
-      language: shell   
-      addons:
-        homebrew:
-          packages:  
-          - python@3.9  
+      osx_image: xcode12 
+      language: shell       
     - name: "Python 3.6.0 on Windows"
       os: windows           
       language: shell       
@@ -88,15 +68,15 @@ jobs:
       env: PATH=/c/Python39:/c/Python39/Scripts:$PATH
 
 install:
-  - pip3 install dbr opencv-python
+    - if [[ ${TRAVIS_OS_NAME} == "windows" ]]; then
+        pip install dbr opencv-python-headless;
+      else
+        pip3 install dbr opencv-python;
+      fi
 
 branches:
   only:
     - main
 
 script:
-    - if [[ ${TRAVIS_OS_NAME} == "windows" ]]; then
-        python ./test.py ./images/1D-1-OverExposure.jpg;
-      else
-        python3 ./test.py ./images/1D-1-OverExposure.jpg;
-      fi
+    - python3 ./test.py ./images/1D-1-OverExposure.jpg || python ./test.py ./images/1D-1-OverExposure.jpg

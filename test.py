@@ -5,8 +5,9 @@ Usage:
    test.py <image file>
 '''
 
-from dbr import *
 import cv2
+from dbr import *
+
 
 
 def main():
