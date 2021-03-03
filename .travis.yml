@@ -33,11 +33,19 @@ jobs:
     - name: "Python 3.9.0 on ARM64 Linux"
       python: 3.9    
       os: linux
-      arch: arm64       
+      arch: arm64    
+    - name: "Python on macOS"
+      os: osx
+      osx_image: xcode11 
+      language: shell    
+      before_install:
+        - python --version
     - name: "Python on macOS"
       os: osx
       osx_image: xcode12 
-      language: shell       
+      language: shell  
+      before_install:
+        - python --version     
     - name: "Python 3.6.0 on Windows"
       os: windows           
       language: shell       
