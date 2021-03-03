@@ -39,13 +39,13 @@ jobs:
       osx_image: xcode11.6 
       language: shell    
       before_install:
-        - bash -c 'python --version'
+        - python3 --version
     - name: "Python on macOS"
       os: osx
       osx_image: xcode12 
       language: shell  
       before_install:
-        - bash -c 'python --version'    
+        - python3 --version    
     - name: "Python 3.6.0 on Windows"
       os: windows           
       language: shell       
