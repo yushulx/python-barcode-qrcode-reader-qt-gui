@@ -34,25 +34,19 @@ jobs:
       python: 3.9    
       os: linux
       arch: arm64  
-    - name: "Python on macOS"
-      os: osx
-      osx_image: xcode11.3 
-      language: shell    
-      before_install:
-        - python3 --version
-    - name: "Python on macOS"
+    - name: "Python 3.7 on macOS"
       os: osx
       osx_image: xcode11.4 
       language: shell    
       before_install:
         - python3 --version  
-    - name: "Python on macOS"
+    - name: "Python 3.8 on macOS"
       os: osx
       osx_image: xcode11.6 
       language: shell    
       before_install:
         - python3 --version
-    - name: "Python on macOS"
+    - name: "Python 3.9 on macOS"
       os: osx
       osx_image: xcode12.2 
       language: shell  
