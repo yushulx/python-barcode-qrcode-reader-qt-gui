@@ -68,7 +68,10 @@ class BarcodeManager():
         self._types = 0
         self._types2 = 0
         self._license = license
-        self.frameQueue, self.resultQueue, self.barcodeScanning = None, None, None
+        self.barcodeScanning = None
+        size = 1
+        self.frameQueue = Queue(size)
+        self.resultQueue = Queue(size)
 
     def __init_params(self):
         if self._template is not None and self._template is not '':
@@ -164,35 +167,47 @@ class BarcodeManager():
     def set_barcode_types_2(self, types):
         self._types2 = types
 
-    def create_barcode_process(self):
-        self.destroy_barcode_process()
-
+    def initQueue(self):
         size = 1
         self.frameQueue = Queue(size)
         self.resultQueue = Queue(size)
+
+    def create_barcode_process(self):
+        self.destroy_barcode_process()
+        self.initQueue()
         self.barcodeScanning = Process(target=process_barcode_frame, args=(self._license, self.frameQueue, self.resultQueue, self._template, self._types, self._types2))
         self.barcodeScanning.start()
     
     def destroy_barcode_process(self):
         if self.frameQueue is not None:
             self.frameQueue.put("")
-            self.frameQueue = None
 
         if self.barcodeScanning is not None:
             self.barcodeScanning.join()
             self.barcodeScanning = None
 
         if self.frameQueue is not None:
+            while not self.frameQueue.empty():
+                try:
+                    self.frameQueue.get(timeout=0.001)
+                except:
+                    pass
             self.frameQueue.close()
             self.frameQueue = None
 
         if self.resultQueue is not None:
+            while not self.resultQueue.empty():
+                try:
+                    self.resultQueue.get(timeout=0.001)
+                except:
+                    pass
             self.resultQueue.close()
             self.resultQueue = None
 
     def append_frame(self, frame):
         try:
-            self.frameQueue.put(frame.copy(), False, 10)
+            if self.frameQueue is not None:
+                self.frameQueue.put(frame.copy(), False, 10)
         except:
             pass
 
@@ -208,4 +223,16 @@ class BarcodeManager():
     def set_license(self, key):
         return self._reader.init_license(key)
         
-    
+    def decodeLatestFrame(self):
+        try:
+            frame = self.frameQueue.get(False, 10)
+            if type(frame) is str:
+                return None
+
+            start = time.time()
+            results = self._reader.decode_buffer(frame)
+            end = time.time()
+            return [results, (end - start) * 1000]
+        except Exception as e:
+            time.sleep(0.01)
+            return None
