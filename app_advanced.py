@@ -52,6 +52,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setAcceptDrops(True)
         
         # Initialization
         self._all_data = {}
@@ -114,6 +115,16 @@ class MainWindow(QMainWindow):
 
         self.worker = None
 
+    def dragEnterEvent(self, event):
+        event.acceptProposedAction()
+
+    def dropEvent(self, event):
+        urls = event.mimeData().urls()
+        filename = urls[0].toLocalFile()
+        self.loadFile(filename)
+        self.decodeFile(filename)
+        event.acceptProposedAction()
+            
     def reportProgress(self, results):
         self._results = results
 
@@ -253,13 +264,16 @@ class MainWindow(QMainWindow):
             template = f.read()
             self.ui.textEdit_template.setText(template)
 
+    def loadFile(self, filename):
+        item = QListWidgetItem()
+        item.setText(filename)
+        self.ui.listWidget.addItem(item)
+        self._all_data[filename] = None
+
     def appendFile(self, filename):
        
         if filename not in self._all_data:
-            item = QListWidgetItem()
-            item.setText(filename)
-            self.ui.listWidget.addItem(item)
-            self._all_data[filename] = None
+            self.loadFile(filename)
 
     def currentItemChanged(self, current, previous):
         filename = current.text()
@@ -407,7 +421,9 @@ class MainWindow(QMainWindow):
                 cv2.line(frame, points[2], points[3], color, thickness)
                 cv2.line(frame, points[3], points[0], color, thickness)
                 cv2.putText(frame, result.barcode_text, points[0], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
-
+        else:
+            out = 'No barcode found'
+            
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image = QImage(frame, frame.shape[1], frame.shape[0], frame.strides[0], QImage.Format_RGB888)
         pixmap = QPixmap.fromImage(image)
