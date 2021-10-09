@@ -41,7 +41,7 @@ Apply for a [free trial license](https://www.dynamsoft.com/customer/license/tria
 
     ![Python Barcode Reader](./screenshots/simple-demo.png)
 
-- Advanced demo:
+- Advanced demo supports reading barcodes from image file, webcam and desktop screenshot:
 
     ```
     pyside2-uic design.ui -o design.py
@@ -49,3 +49,5 @@ Apply for a [free trial license](https://www.dynamsoft.com/customer/license/tria
     ```
 
     ![Python Barcode Reader](./screenshots/advanced-demo.png)
+
+    

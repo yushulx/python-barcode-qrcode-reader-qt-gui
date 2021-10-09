@@ -17,7 +17,8 @@ import os
 import cv2
 from dbr import EnumBarcodeFormat, EnumBarcodeFormat_2
 
-from PySide2.QtCore import QObject, QThread, Signal
+from PySide2.QtCore import QObject, QThread, Signal, Qt
+import SnippingTool
 
 class Worker(QObject):
     finished = Signal()
@@ -50,6 +51,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self, license):
         super(MainWindow, self).__init__()
+        self.setWindowState(Qt.WindowMaximized)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setAcceptDrops(True)
@@ -74,6 +76,12 @@ class MainWindow(QMainWindow):
 
         # The current path.
         self._path = os.path.dirname(os.path.realpath(__file__))
+
+        # Screenshot button
+        self.snippingWidget = SnippingTool.SnippingWidget(app=QApplication.instance())
+        self.snippingWidget.onSnippingCompleted = self.onSnippingCompleted
+        self.ui.pushButton_area.clicked.connect(self.snipArea)
+        self.ui.pushButton_full.clicked.connect(self.snipFull)
         
         # Camera button
         self.ui.pushButton_open.clicked.connect(self.openCamera)
@@ -114,6 +122,22 @@ class MainWindow(QMainWindow):
         self.clicked = False
 
         self.worker = None
+
+    def onSnippingCompleted(self, frame):
+        self.setWindowState(Qt.WindowMaximized)
+        if frame is None:
+            return 
+
+        frame, self._results = self._barcodeManager.decode_frame(frame)
+        self.showResults(frame, self._results)
+
+    def snipArea(self):
+        self.setWindowState(Qt.WindowMinimized)
+        self.snippingWidget.start()    
+
+    def snipFull(self):
+        self.setWindowState(Qt.WindowMinimized)
+        self.snippingWidget.fullscreen()    
 
     def dragEnterEvent(self, event):
         event.acceptProposedAction()
