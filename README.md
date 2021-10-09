@@ -5,6 +5,10 @@
 This is a `cross-platform` GUI barcode reader implemented with `Python 3`, `PyQt`, and [Dynamsoft Python Barcode SDK](https://www.dynamsoft.com/barcode-reader/programming/python/). You can use it on `Windows`, `Linux`, `macOS` and `Raspberry Pi OS`.
 
 ## Requirements
+- PIL
+    ```
+    python3 -m pip install pillow
+    ```
 - OpenCV
 
     ```
