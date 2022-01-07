@@ -54,5 +54,5 @@ Apply for a [free trial license](https://www.dynamsoft.com/customer/license/tria
 
     
 ## Blog
-- [How to Scan QR Code from Desktop Screen in Python](https://www.dynamsoft.com/codepool/scan-qr-code-from-desktop-screen.html)
-- [Advanced GUI Barcode Reader for Windows, Linux, macOS and Rasberry Pi OS](https://www.dynamsoft.com/codepool/gui-barcode-reader-windows-linux-macos.html)
+- [How to Create a Python Barcode Reader to Scan QR Code from Desktop Screen](https://www.dynamsoft.com/codepool/scan-qr-code-from-desktop-screen.html)
+- [Advanced GUI Python Barcode Reader for Windows, Linux, macOS and Rasberry Pi OS](https://www.dynamsoft.com/codepool/gui-barcode-reader-windows-linux-macos.html)
