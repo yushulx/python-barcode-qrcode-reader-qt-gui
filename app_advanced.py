@@ -62,7 +62,13 @@ class MainWindow(QMainWindow):
         self._painter = None
 
         # Dynamsoft Barcode Reader
-        self._barcodeManager = BarcodeManager(license)
+        self._barcodeManager = BarcodeManager()
+        if license is not None:
+            error = self._barcodeManager.set_license(license)
+            if error[0] != EnumErrorCode.DBR_OK:
+                self.showMessageBox('Error', error[1])
+            else:
+                self.ui.statusbar.showMessage('Dynamsoft Barcode Reader is activated successfully!')
 
         # Create a timer.
         self.timer = None

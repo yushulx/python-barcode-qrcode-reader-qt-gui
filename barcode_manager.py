@@ -5,12 +5,11 @@ from multiprocessing import Process, Queue
 import time
 import numpy as np
 
-
-def process_barcode_frame(license, frameQueue, resultQueue, template=None, types=0, types2=0):
+def process_barcode_frame(frameQueue, resultQueue, template=None, types=0, types2=0):
+    
     # Create Dynamsoft Barcode Reader
     reader = BarcodeReader()
-    # Apply for a trial license: https://www.dynamsoft.com/customer/license/trialLicense
-    reader.init_license(license)
+    
     if template is not None and template is not '':
         error = reader.init_runtime_settings_with_string(template)
         if error[0] != EnumErrorCode.DBR_OK:
@@ -58,16 +57,14 @@ def process_barcode_frame(license, frameQueue, resultQueue, template=None, types
 
 
 class BarcodeManager():
-    def __init__(self, license):
+    def __init__(self):
         self._reader = BarcodeReader()
-        self._reader.init_license(license)
         settings = self._reader.get_runtime_settings()
         settings.max_algorithm_thread_count = 1
         self._reader.update_runtime_settings(settings)
         self._template = None
         self._types = 0
         self._types2 = 0
-        self._license = license
         self.barcodeScanning = None
         size = 1
         self.frameQueue = Queue(size)
@@ -175,7 +172,7 @@ class BarcodeManager():
     def create_barcode_process(self):
         self.destroy_barcode_process()
         self.initQueue()
-        self.barcodeScanning = Process(target=process_barcode_frame, args=(self._license, self.frameQueue, self.resultQueue, self._template, self._types, self._types2))
+        self.barcodeScanning = Process(target=process_barcode_frame, args=(self.frameQueue, self.resultQueue, self._template, self._types, self._types2))
         self.barcodeScanning.start()
     
     def destroy_barcode_process(self):
@@ -221,7 +218,8 @@ class BarcodeManager():
         return self._reader.output_settings_to_json_string()
 
     def set_license(self, key):
-        return self._reader.init_license(key)
+         # Apply for a trial license: https://www.dynamsoft.com/customer/license/trialLicense?product=dbr
+        return BarcodeReader.init_license(key)
         
     def decodeLatestFrame(self):
         try:

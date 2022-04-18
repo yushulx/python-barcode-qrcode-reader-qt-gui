@@ -7,8 +7,7 @@ Usage:
 
 import cv2
 from dbr import *
-
-
+import dbr
 
 def main():
     try:
@@ -16,7 +15,8 @@ def main():
     except:
         print(__doc__)
         return
-
+    print(dbr.__version__)
+    BarcodeReader.init_license("DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==")
     image = cv2.imread(file_path)
     reader = BarcodeReader()
     try:

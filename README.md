@@ -12,10 +12,10 @@ This is a `cross-platform` GUI Python barcode reader implemented with `Python 3`
     ```
     python3 -m pip install opencv-python
     ```
-- Dynamsoft Barcode Reader
+- Dynamsoft Barcode Reader v9.0.0
 
     ```
-    python3 -m pip install dbr
+    python3 -m pip install dbr==9.0
     ```
 - PySide2
     - Windows, Linux and macOS
@@ -31,7 +31,7 @@ This is a `cross-platform` GUI Python barcode reader implemented with `Python 3`
         ```
 
 ## Dynamsoft Barcode SDK License
-Apply for a [free trial license](https://www.dynamsoft.com/customer/license/trialLicense) and save it to `license.txt`.
+Apply for a [free trial license](https://www.dynamsoft.com/customer/license/trialLicense?product=dbr) and save it to `license.txt`.
 
 ## Usage
 

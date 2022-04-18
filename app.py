@@ -27,7 +27,11 @@ class UI_Window(QWidget):
         self.WINDOW_HEIGHT = 1000
         self._results = None
         # Initialize Dynamsoft Barcode Reader
-        self._barcodeManager = BarcodeManager(license)
+        self._barcodeManager = BarcodeManager()
+        if license is not None:
+            error = self._barcodeManager.set_license(license)
+            if error[0] != EnumErrorCode.DBR_OK:
+                self.showMessageBox(error[1])
 
         # Initialize OpenCV camera
         self._cap = cv2.VideoCapture(0)
