@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
 
         # Dynamsoft Barcode Reader
         self._barcodeManager = BarcodeManager()
-        if license is not None:
+        if license is not None and license != '':
             error = self._barcodeManager.set_license(license)
             if error[0] != EnumErrorCode.DBR_OK:
                 self.showMessageBox('Error', error[1])
